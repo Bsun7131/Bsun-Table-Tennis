@@ -18,7 +18,7 @@
       background: #111;
       border: 3px solid white;
       max-width: 95vw;
-      max-height: 70vh;
+      max-height: 65vh;
     }
 
     button {
@@ -130,6 +130,10 @@
     downBtn.addEventListener("mouseup", () => moveDown = false);
 
     restartBtn.addEventListener("click", restartGame);
+    restartBtn.addEventListener("touchstart", function(e) {
+      e.preventDefault();
+      restartGame();
+    });
 
     function drawRect(obj, color) {
       ctx.fillStyle = color;
@@ -173,18 +177,20 @@
 
       if (
         ball.x - ball.size < player.x + player.width &&
+        ball.x > player.x &&
         ball.y > player.y &&
         ball.y < player.y + player.height
       ) {
-        ball.speedX *= -1;
+        ball.speedX = Math.abs(ball.speedX);
       }
 
       if (
         ball.x + ball.size > computer.x &&
+        ball.x < computer.x + computer.width &&
         ball.y > computer.y &&
         ball.y < computer.y + computer.height
       ) {
-        ball.speedX *= -1;
+        ball.speedX = -Math.abs(ball.speedX);
       }
 
       if (ball.x < 0) {
@@ -208,8 +214,8 @@
     function resetBall() {
       ball.x = canvas.width / 2;
       ball.y = canvas.height / 2;
-      ball.speedX *= -1;
-      ball.speedY = 3;
+      ball.speedX = 4 * (Math.random() > 0.5 ? 1 : -1);
+      ball.speedY = 3 * (Math.random() > 0.5 ? 1 : -1);
     }
 
     function drawGameOver() {
@@ -226,21 +232,25 @@
     function restartGame() {
       playerScore = 0;
       computerScore = 0;
+
       playerScoreText.textContent = 0;
       computerScoreText.textContent = 0;
 
       player.y = 130;
       computer.y = 130;
 
-      ball.x = 250;
-      ball.y = 175;
-      ball.speedX = 4;
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.speedX = 4 * (Math.random() > 0.5 ? 1 : -1);
       ball.speedY = 3;
 
+      moveUp = false;
+      moveDown = false;
       gameOver = false;
+
       restartBtn.style.display = "none";
 
-      gameLoop();
+      requestAnimationFrame(gameLoop);
     }
 
     function gameLoop() {
@@ -260,7 +270,7 @@
       }
     }
 
-    gameLoop();             
+    gameLoop();
   </script>
 
 </body>
